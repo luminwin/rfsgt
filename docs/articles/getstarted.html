@@ -101,6 +101,7 @@
             <h4 data-toc-skip class="date">2025-05-09</h4>
       
 
+
     </div>
 
     
@@ -430,10 +431,13 @@ empirical risk reduction.</p>
 figure presents results from a nonlinear simulation involving two
 informative variables and 1,000 noise variables, under varying
 <code>hcut</code> values. The top-left panel shows the true regression
-surface as a function of the two signal variables. The remaining panels
-(arranged left to right, top to bottom) display the predicted surfaces
-from Super Greedy Trees (SGTs) with increasing <code>hcut</code>
-values.</p>
+surface
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ψ</mi><annotation encoding="application/x-tex">\psi</annotation></semantics></math>
+as a function of the two signal variables
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>x</mi><mn>1</mn></msub><mo>,</mo><msub><mi>x</mi><mn>2</mn></msub><mo stretchy="true" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(x_1, x_2)</annotation></semantics></math>.
+The remaining panels (arranged left to right, top to bottom) display the
+predicted surfaces from Super Greedy Trees (SGTs) with increasing
+<code>hcut</code> values.</p>
 <p>The <code>hcut = 0</code> model, equivalent to standard CART,
 produces piecewise constant predictions with axis-aligned splits.
 Performance improves noticeably at <code>hcut = 1</code>, where oblique
