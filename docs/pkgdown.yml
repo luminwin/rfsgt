@@ -1,0 +1,10 @@
+pandoc: 3.1.11
+pkgdown: 2.1.1
+pkgdown_sha: ~
+articles:
+  getstarted: getstarted.html
+  installation: installation.html
+last_built: 2025-05-09T06:03Z
+urls:
+  reference: https://www.randomforestsgt.org/reference
+  article: https://www.randomforestsgt.org/articles
