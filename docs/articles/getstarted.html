@@ -426,7 +426,25 @@ ellipsoids, higher-order terms)</li>
 cross-validation is applied to select the regularization parameter. The
 trees are grown sequentially by greedily selecting splits that maximize
 empirical risk reduction.</p>
-<p><strong>[Insert Figure: Geometry of Cuts]</strong></p>
+<p><br><img src="pic%2Fsgt_cuts.jpg" style="width:80.0%"><br> The above
+figure presents results from a nonlinear simulation involving two
+informative variables and 1,000 noise variables, under varying
+<code>hcut</code> values. The top-left panel shows the true regression
+surface as a function of the two signal variables. The remaining panels
+(arranged left to right, top to bottom) display the predicted surfaces
+from Super Greedy Trees (SGTs) with increasing <code>hcut</code>
+values.</p>
+<p>The <code>hcut = 0</code> model, equivalent to standard CART,
+produces piecewise constant predictions with axis-aligned splits.
+Performance improves noticeably at <code>hcut = 1</code>, where oblique
+(hyperplane-based) splits are introduced. As <code>hcut</code> increases
+further, allowing for ellipsoidal and higher-order geometric cuts, the
+predicted surfaces more closely approximate the true function.</p>
+<p>The bottom-right panel plots empirical risk against tree size. Models
+with <code>hcut = 4</code>, <code>5</code>, and <code>6</code> achieve
+rapid convergence to near-zero risk, demonstrating the advantage of
+incorporating more flexible geometric partitions in high-dimensional
+settings.</p>
 </div>
 <div class="section level2">
 <h2 id="quick-start-with-quick-installation">Quick Start with Quick Installation<a class="anchor" aria-label="anchor" href="#quick-start-with-quick-installation"></a>
@@ -590,7 +608,6 @@ empirical risk reduction.</p>
 <span id="cb4-73"><a href="#cb4-73" tabindex="-1"></a>                       OOB R<span class="sc">-</span>squared<span class="sc">:</span> <span class="fl">0.8325974</span></span>
 <span id="cb4-74"><a href="#cb4-74" tabindex="-1"></a>         OOB standardized error rate<span class="sc">:</span> <span class="fl">0.1674026</span></span>
 <span id="cb4-75"><a href="#cb4-75" tabindex="-1"></a>                      OOB error rate<span class="sc">:</span> <span class="fl">4.522421</span></span></code></pre></div>
-<p><br><img src="pic%2Fsgt_cuts.jpg" style="width:60.0%"></p>
 </div>
 <div class="section level3">
 <h3 id="high-dimensional-example-with-variable-selection">3. High-Dimensional Example with Variable Selection<a class="anchor" aria-label="anchor" href="#high-dimensional-example-with-variable-selection"></a>
