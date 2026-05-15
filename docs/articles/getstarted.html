@@ -79,7 +79,15 @@
   </a>
 </li>
       </ul>
+<ul class="nav navbar-nav navbar-right">
+<li>
+  <a href="https://github.com/kogalur/randomForestSGT/" class="external-link">
+    <span class="fab fa-github fa-lg"></span>
 
+    GitHub
+  </a>
+</li>
+      </ul>
 </div>
 <!--/.nav-collapse -->
   </div>
@@ -99,8 +107,7 @@
             
             <h4 data-toc-skip class="date">2026-05-14</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/kogalur/randomForestSGT/blob/HEAD/vignettes/getstarted.Rmd" class="external-link"><code>vignettes/getstarted.Rmd</code></a></small>
-      <div class="hidden name"><code>getstarted.Rmd</code></div>
+      
 
     </div>
 
@@ -396,10 +403,11 @@ font-size: 16px;
 </h2>
 <p>The <code>randomForestSGT</code> package implements <strong>Super
 Greedy Trees (SGTs)</strong>, a flexible decision tree method for
-regression. Unlike standard CART models, which rely on univariate
-splits, SGTs adaptively fit lasso-penalized parametric models at each
-node, enabling rich multivariate geometric cuts—such as hyperplanes,
-ellipsoids, and higher-order surfaces.</p>
+regression <span class="citation">[1]</span>. Unlike standard CART
+models, which rely on univariate splits, SGTs adaptively fit
+lasso-penalized parametric models at each node, enabling rich
+multivariate geometric cuts—such as hyperplanes, ellipsoids, and
+higher-order surfaces.</p>
 <p>These cuts provide greater flexibility in partitioning the feature
 space while retaining the interpretability of decision trees. The trees
 are grown greedily by maximizing empirical risk reduction using a
@@ -676,12 +684,17 @@ randomForestSGT vignette.” <a href="http://www.randomforestsgt.org/articles/ge
 <span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>    howpublished <span class="ot">=</span> <span class="st">"\url{http://www.randomforestsgt.org/articles/getstarted.html}"</span>,</span>
 <span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>    note <span class="ot">=</span> <span class="st">"[accessed date]"</span></span>
 <span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a>}</span></code></pre></div>
+<div id="refs" class="references csl-bib-body">
+<div id="ref-ishwaran2026sgt" class="csl-entry">
+1. Ishwaran H. Super greedy trees. Artificial Intelligence Review.
+2026;To appear.
+</div>
+</div>
 </div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
-   <nav id="toc" data-toggle="toc"><h2 data-toc-skip>Contents</h2>
-    </nav>
+
       </div>
 
 </div>
