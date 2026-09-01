@@ -518,8 +518,7 @@ settings.</p>
 <span id="cb3-46"><a href="#cb3-46" tabindex="-1"></a>                      OOB error rate<span class="sc">:</span> <span class="fl">11.8699</span></span>
 <span id="cb3-47"><a href="#cb3-47" tabindex="-1"></a>                      </span>
 <span id="cb3-48"><a href="#cb3-48" tabindex="-1"></a>                      </span>
-<span id="cb3-49"><a href="#cb3-49" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">rfsgt</span>(medv <span class="sc">~</span> ., BostonHousing, <span class="at">hcut =</span> <span class="dv">0</span>, <span class="at">nodesize =</span> <span class="dv">1</span>))</span>
-<span id="cb3-50"><a href="#cb3-50" tabindex="-1"></a></span>
+
 <span id="cb3-51"><a href="#cb3-51" tabindex="-1"></a><span class="co"># Using hcut = 1 with smaller nodes</span></span>
 <span id="cb3-52"><a href="#cb3-52" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">rfsgt</span>(medv <span class="sc">~</span> ., BostonHousing, <span class="at">nodesize =</span> <span class="dv">1</span>))</span>
 <span id="cb3-53"><a href="#cb3-53" tabindex="-1"></a></span>
@@ -530,12 +529,12 @@ settings.</p>
 <span id="cb3-58"><a href="#cb3-58" tabindex="-1"></a>                   Average node size<span class="sc">:</span> <span class="fl">1.6</span></span>
 <span id="cb3-59"><a href="#cb3-59" tabindex="-1"></a>              Total no. of variables<span class="sc">:</span> <span class="dv">13</span></span>
 <span id="cb3-60"><a href="#cb3-60" tabindex="-1"></a>                              Family<span class="sc">:</span> regr</span>
-<span id="cb3-61"><a href="#cb3-61" tabindex="-1"></a>                           Splitrule<span class="sc">:</span> cart.regr</span>
-<span id="cb3-62"><a href="#cb3-62" tabindex="-1"></a>                                hcut<span class="sc">:</span> <span class="dv">0</span></span>
+<span id="cb3-61"><a href="#cb3-61" tabindex="-1"></a>                           Splitrule<span class="sc">:</span> sg.regr</span>
+<span id="cb3-62"><a href="#cb3-62" tabindex="-1"></a>                                hcut<span class="sc">:</span> <span class="dv">1</span></span>
 <span id="cb3-63"><a href="#cb3-63" tabindex="-1"></a>                      hcut<span class="sc">-</span>dimension<span class="sc">:</span> <span class="dv">13</span></span>
-<span id="cb3-64"><a href="#cb3-64" tabindex="-1"></a>                       OOB R<span class="sc">-</span>squared<span class="sc">:</span> <span class="fl">0.8833915</span></span>
-<span id="cb3-65"><a href="#cb3-65" tabindex="-1"></a>         OOB standardized error rate<span class="sc">:</span> <span class="fl">0.1166085</span></span>
-<span id="cb3-66"><a href="#cb3-66" tabindex="-1"></a>                      OOB error rate<span class="sc">:</span> <span class="fl">9.863532</span></span></code></pre></div>
+<span id="cb3-64"><a href="#cb3-64" tabindex="-1"></a>                       OOB R<span class="sc">-</span>squared<span class="sc">:</span> <span class="fl">0.8737972</span></span>
+<span id="cb3-65"><a href="#cb3-65" tabindex="-1"></a>         OOB standardized error rate<span class="sc">:</span> <span class="fl">0.1262028</span></span>
+<span id="cb3-66"><a href="#cb3-66" tabindex="-1"></a>                      OOB error rate<span class="sc">:</span> <span class="fl">10.67508</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="tuning-hcut-with-pre-filtering">2. Tuning <code>hcut</code> with Pre-filtering<a class="anchor" aria-label="anchor" href="#tuning-hcut-with-pre-filtering"></a>
