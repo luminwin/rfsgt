@@ -26,7 +26,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">Random Forest Super Greedy Trees</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.0.0</span>
       </span>
     </div>
 
@@ -92,23 +92,25 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">rfsgt</span><span class="op">(</span><span class="va">formula</span>,</span>
 <span>      <span class="va">data</span>,</span>
 <span>      ntree <span class="op">=</span> <span class="kw">if</span> <span class="op">(</span><span class="va">hcut</span> <span class="op">==</span> <span class="fl">0</span><span class="op">)</span> <span class="fl">500</span> <span class="kw">else</span> <span class="fl">100</span>,</span>
-<span>      hcut <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>      hcut <span class="op">=</span> <span class="fl">2</span>,</span>
 <span>      treesize <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>      nodesize <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>      filter <span class="op">=</span> <span class="op">(</span><span class="va">hcut</span> <span class="op">&gt;</span> <span class="fl">1</span><span class="op">)</span>,</span>
-<span>      bsf <span class="op">=</span> <span class="kw">if</span> <span class="op">(</span><span class="va">hcut</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span> <span class="st">"oob"</span> <span class="kw">else</span> <span class="st">"inbag"</span>,</span>
+<span>      bsf <span class="op">=</span> <span class="kw">if</span> <span class="op">(</span><span class="va">hcut</span> <span class="op">&gt;</span> <span class="fl">0</span> <span class="op">&amp;&amp;</span> <span class="fu"><a href="https://rdrr.io/r/base/Logic.html" class="external-link">isFALSE</a></span><span class="op">(</span><span class="va">node.center</span><span class="op">)</span><span class="op">)</span> <span class="st">"oob"</span> <span class="kw">else</span> <span class="st">"inbag"</span>,</span>
 <span>      keep.only <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>      fast <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>      pure.lasso <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>      eps <span class="op">=</span> <span class="fl">.005</span>,</span>
 <span>      maxit <span class="op">=</span> <span class="fl">500</span>,</span>
 <span>      nfolds <span class="op">=</span> <span class="fl">10</span>,</span>
-<span>      block.size <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>      block.size <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>      bootstrap <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"by.root"</span>, <span class="st">"none"</span>, <span class="st">"by.user"</span><span class="op">)</span>,</span>
 <span>      samptype <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"swor"</span>, <span class="st">"swr"</span><span class="op">)</span>,  samp <span class="op">=</span> <span class="cn">NULL</span>, membership <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>      sampsize <span class="op">=</span> <span class="kw">if</span> <span class="op">(</span><span class="va">samptype</span> <span class="op">==</span> <span class="st">"swor"</span><span class="op">)</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">{</span><span class="va">x</span> <span class="op">*</span> <span class="fl">.632</span><span class="op">}</span> <span class="kw">else</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">{</span><span class="va">x</span><span class="op">}</span>,</span>
+<span>      node.center <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>      seed <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>      do.trace <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>      node.restrict <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>      <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -131,14 +133,19 @@
 
   <dt id="arg-hcut">hcut<a class="anchor" aria-label="anchor" href="#arg-hcut"></a></dt>
 <dd><p>Integer value indexing type of parametric regression model
-    to use for splitting.  See details below.</p></dd>
+    to use for splitting.  The default 2 uses linear and quadratic terms;
+    3 and 4 add pairwise interactions and cubic terms and were the most
+    accurate in benchmarks.  See details below.</p></dd>
 
 
   <dt id="arg-treesize">treesize<a class="anchor" aria-label="anchor" href="#arg-treesize"></a></dt>
-<dd><p>Function specifying upper bound for size of tree
-    (number of terminal nodes) where first input is <code>n</code> sample size
-    and second input is <code>hcut</code>.  Can also be supplied as an integer
-    value and defaults to an internal function if unspecified.</p></dd>
+<dd><p>Upper bound for the size of a tree (number of
+    terminal nodes): an integer, or a function of the sample size
+    <code>n</code> and of <code>hcut</code>.  The default is
+    <code>min(1000, max(200, n/5))</code> for <code>hcut</code> 0 and 1, and
+    <code>min(25, n/5)</code> for <code>hcut</code> 2 and above: with the restricted
+    score, trees of 25 terminal nodes were as accurate on average as trees
+    of 100 over twelve datasets and grow faster.</p></dd>
 
 
   <dt id="arg-nodesize">nodesize<a class="anchor" aria-label="anchor" href="#arg-nodesize"></a></dt>
@@ -148,7 +155,7 @@
 
   <dt id="arg-filter">filter<a class="anchor" aria-label="anchor" href="#arg-filter"></a></dt>
 <dd><p>Logical value specifying whether dimension reduction
-    (filtering) of features should be performed.Can also be specified
+    (filtering) of features should be performed. Can also be specified
     using the helper function <code>tune.hcut</code> which performs dimension
     reduction prior to fitting.  See examples below.</p></dd>
 
@@ -156,13 +163,14 @@
   <dt id="arg-bsf">bsf<a class="anchor" aria-label="anchor" href="#arg-bsf"></a></dt>
 <dd><p>Best split first (BSF) empirical risk minimization
     strategy. Accepted values are <code>"oob"</code> and <code>"inbag"</code>.
-    The default is <code>"oob"</code> when <code>hcut</code>&gt;0 and
-    <code>"inbag"</code> otherwise. Using OOB (out-of-bag) empirical risk
-    minimization can improve robustness, but it can also optimistically
-    bias OOB error estimates. Setting <code>bsf="inbag"</code> gives pure
-    inbag empirical risk minimization. If <code>filter</code> is supplied
-    using <code>tune.hcut</code> and <code>bsf</code> is omitted, the stored
-    tuning value is used.</p></dd>
+    The default uses "inbag" unless <code>hcut</code>&gt;0 and <code>node.center</code>
+    is <code>FALSE</code>.  Setting <code>bsf="inbag"</code> uses
+    inbag empirical risk minimization and therefore produces the most
+    releastic OOB error rates.  This setting is suitable when
+    <code>node.center</code> is <code>TRUE</code> as this is the most robust version
+    of SGTs.  Otherwise, use <code>bsf="oob"</code> which is a guardrail to
+    avoid numerical problems especially for larger <code>hcut</code> values;
+    however this yields optimistic OOB error.</p></dd>
 
 
   <dt id="arg-keep-only">keep.only<a class="anchor" aria-label="anchor" href="#arg-keep-only"></a></dt>
@@ -246,6 +254,27 @@
     approximate time to completion.</p></dd>
 
 
+  <dt id="arg-node-center">node.center<a class="anchor" aria-label="anchor" href="#arg-node-center"></a></dt>
+<dd><p>Logical value specifying whether to center covariates
+    within each node before forming powers and products for the lasso.
+    Default is <code>TRUE</code>. When <code>filter</code> is supplied by
+    <code>tune.hcut</code>, an omitted value is inherited from the tuning
+    result. Ignored for <code>hcut=0</code>.</p></dd>
+
+
+  <dt id="arg-node-restrict">node.restrict<a class="anchor" aria-label="anchor" href="#arg-node-restrict"></a></dt>
+<dd><p>Logical value enabling restricted lasso terminal
+    scores. Default is <code>TRUE</code>. Source coordinates are clamped to
+    the node's inbag ranges before powers and products are formed, and
+    the resulting score is clamped to its inbag response range. In grow
+    mode this applies to OOB predictions and, with <code>bsf="oob"</code>,
+    candidate OOB risks. It applies to both raw and centered dictionaries.
+    Inbag scores, CART terminal predictions, and internal routing scores
+    use ordinary evaluation. Ignored for <code>hcut=0</code>. The setting is
+    saved in the forest and inherited by <code>predict.rfsgt</code> unless
+    overridden.</p></dd>
+
+
   <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
 <dd><p>Further arguments passed to <code class="command">cdlasso</code> and
     <code class="command">rfsrc</code>.</p></dd>
@@ -259,13 +288,13 @@
 
 <p>Super Greedy Trees (SGTs) are tree-based models that extend ordinary
   CART-style splitting in a fundamental way.  In a standard tree, a
-  split typically tests one variable at a time, so tilted, curved, or
+  split typically tests one variable at a time; hence tilted, curved, or
   interaction-driven decision boundaries must be approximated by many
-  small axis-aligned cuts.  SGTs instead learn a sparse <em>score</em>
+  small axis-aligned cuts.  SGTs instead estimate a sparse <em>score</em>
   inside a node and then split the node using that score.  This allows
-  a split to depend on several variables at once, so the fitted tree can
-  represent hyperplane, elliptical, hyperboloid, and other higher-order
-  geometric boundaries much more directly.</p>
+  a split to depend on several variables at once; the fitted tree can
+  therefore represent hyperplane, elliptical, hyperboloid, and other
+  higher-order geometric boundaries much more directly.</p>
 <p>Operationally, the procedure is organized in stages.  First, a family of
   candidate score functions is chosen through <code>hcut</code>.  Second, within
   each node, a lasso model is fit by coordinate descent.  Third, the fitted
@@ -273,7 +302,7 @@
   on that score is searched for the best split.  The resulting daughter
   nodes are then re-fit and compared using empirical risk.  In this way,
   the difficult multivariate split problem is converted into a manageable
-  one-dimensional threshold search along a learned score.</p>
+  one-dimensional threshold search along an estimated score.</p>
 <p>Tree growth uses a <em>best split first</em> (BSF) strategy.  Rather than
   expanding nodes in strict depth-first or breadth-first order, BSF scans
   the current terminal nodes, measures the reduction in empirical risk for
@@ -294,15 +323,15 @@
   achieve the same structural fit with fewer splits.</p>
 <p>An equally important feature of SGTs is that the fitted forest is not
   only a prediction device.  Because each split score and each terminal-node
-  predictor is a sparse lasso model, the forest also carries local
+  predictor is a sparse lasso model, the forest also stores local
   coefficient information.  For a given observation, each tree contributes
   the coefficient vector from the terminal node containing that
   observation, and averaging across trees yields forest-level beta
   summaries that are usually more stable than the coefficients from any
   single tree.  These beta values are local and data-adaptive: they can
-  change from one region of the feature space to another, so they should
-  be viewed as coefficient functions rather than a single global
-  regression vector.</p>
+  change from one region of the feature space to another; they should
+  therefore be viewed as coefficient functions rather than a single
+  global regression vector.</p>
 <p>This gives SGTs a genuinely hybrid character.  The partition of the
   feature space is nonparametric, as in a tree or forest, but within each
   local region the fitted response is represented by a sparse parametric
@@ -314,7 +343,12 @@
   In many applications, these summaries can be as informative as the
   prediction itself because they show which variables, nonlinear terms,
   and interactions are driving the fitted value near the observation of
-  interest.</p>
+  interest.  For centered fits, <code>get.beta</code> expands each node
+  polynomial in the original coordinates before averaging; hence the
+  coefficients and contributions are in the units of the data, and the
+  change made by the restricted score is reported as a separate
+  <code>response.adjustment</code>.  For new-data explanations, pass the
+  original grow object through <code>get.beta(pred, grow = fit)</code>.</p>
 
 <p>Parametric models used for splitting are indexed by <code>hcut</code>
   corresponding to the following geometric regions:</p>
@@ -384,6 +418,24 @@
   when <code>hcut &gt; 0</code>.  As with any model-selection procedure that
   reuses held-out data, however, users should remember that the reported
   OOB error can then be mildly optimistic.</p>
+<p>A fourth safeguard is the restricted score, <code>node.restrict</code>.  A
+  lasso terminal node predicts with a polynomial estimated from its
+  inbag cases.  An observation routed to the node can lie outside the
+  region those cases occupy, and there a retained square or product
+  takes values no inbag case produced; the prediction can then leave the
+  response range by orders of magnitude, most often in small trees and
+  at larger <code>hcut</code>.  With <code>node.restrict=TRUE</code> (the default)
+  the polynomial is evaluated at the nearest point of the node's inbag
+  box and the result is confined to the node's inbag response range.
+  Inbag cases are evaluated as before; growth, routing and inbag
+  predictions are therefore unchanged, and the restriction acts on the OOB ensemble
+  and error rate, on the OOB risks of candidate daughters when
+  <code>bsf="oob"</code>, and on new data.  Over twelve regression datasets
+  it removed every failure of small trees and left the error of large
+  trees unchanged; hence tree size can be chosen for speed.  With it,
+  <code>hcut</code> values of 2 to 4 were more accurate than <code>hcut=1</code>
+  and than CART on average.  <code>node.restrict=FALSE</code> reproduces the
+  evaluation of earlier versions.</p>
 <p>From a practical point of view, the main tuning parameters have clear
   roles.  Use <code>hcut</code> to control cut richness, <code>treesize</code> and
   <code>nodesize</code> to control tree complexity, <code>filter</code> or
@@ -396,7 +448,11 @@
   <code>predict.rfsgt</code>.  Users interested in the local parametric
   structure can query the same fitted forest with <code>get.beta</code> to
   recover beta summaries and partial contributions without fitting a
-  separate surrogate model.</p>
+  separate surrogate model.  For that purpose grow shallow trees, with
+  nodes of about 100 cases or more: the terminal coefficients are
+  shrunk by the lasso and attenuated by the selection of the splits in
+  small nodes, while the prediction error is insensitive to tree size
+  with the restricted score (see <code>get.beta</code>).</p>
     </div>
     <div id="value">
     <h2>Value</h2>
@@ -434,6 +490,15 @@
     <dt><code>hcut</code></dt>
 <dd><p>Final <code>hcut</code> value used to construct the
       splitting model.</p></dd>
+
+
+    <dt><code>node.center</code></dt>
+<dd><p>Value of the <code>node.center</code> option.</p></dd>
+
+
+    <dt><code>node.restrict</code></dt>
+<dd><p>Value of the <code>node.restrict</code> option,
+      also saved in <code>forest$node.restrict</code>.</p></dd>
 
 
     <dt><code>splitrule</code></dt>
@@ -591,14 +656,17 @@
     <h2>References</h2>
 
 
-<p>Ishwaran H. (2025).  Super greedy trees.  To appear in Artificial
-  Intelligence Review.</p>
+<p>Ishwaran H. (2026).  Super greedy trees.  <em>Artificial
+  Intelligence Review</em>, 59:142.  <a href="https://doi.org/10.1007/s10462-026-11541-6" class="external-link">doi:10.1007/s10462-026-11541-6</a></p>
     </div>
     <div id="see-also">
     <h2>See also</h2>
     <div class="dont-index">
 
 <p><code class="command"><a href="cdlasso.rfsgt.html">cdlasso</a></code>,
+  <code class="command"><a href="cv.rfsgt.html">cv.rfsgt</a></code>,
+  <code class="command"><a href="get.beta.html">get.beta</a></code>,
+  <code class="command"><a href="plot.rfsgt.html">plot.rfsgt</a></code>,
   <code class="command"><a href="predict.rfsgt.html">predict.rfsgt</a></code></p></div>
     </div>
 
@@ -628,8 +696,10 @@
 <span><span class="co">## load the data</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">BostonHousing</span>, package <span class="op">=</span> <span class="st">"mlbench"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co">## default basic call</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu">rfsgt</span><span class="op">(</span><span class="va">medv</span><span class="op">~</span><span class="va">.</span>, <span class="va">BostonHousing</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">## hcut=4: linear, quadratic, pairwise, plus all degree 3 polynomials</span></span>
+<span><span class="co">## (the default is hcut=2; both apply the filter and the restricted score)</span></span>
+<span><span class="va">o</span> <span class="op">&lt;-</span> <span class="fu">rfsgt</span><span class="op">(</span><span class="va">medv</span><span class="op">~</span><span class="va">.</span>, <span class="va">BostonHousing</span>, hcut<span class="op">=</span><span class="fl">4</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">o</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">## variable selection</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="fu"><a href="utilities_internal.html">vimp.rfsgt</a></span><span class="op">(</span><span class="va">medv</span><span class="op">~</span><span class="va">.</span>,<span class="va">BostonHousing</span><span class="op">)</span><span class="op">)</span></span>
@@ -638,8 +708,12 @@
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu">rfsgt</span><span class="op">(</span><span class="va">medv</span><span class="op">~</span><span class="va">.</span>, <span class="va">BostonHousing</span>, hcut<span class="op">=</span><span class="fl">0</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu">rfsgt</span><span class="op">(</span><span class="va">medv</span><span class="op">~</span><span class="va">.</span>, <span class="va">BostonHousing</span>, hcut<span class="op">=</span><span class="fl">0</span>, nodesize<span class="op">=</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co">## hcut=1 with smaller nodesize</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu">rfsgt</span><span class="op">(</span><span class="va">medv</span><span class="op">~</span><span class="va">.</span>, <span class="va">BostonHousing</span>, nodesize<span class="op">=</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">## hcut=3 with smaller nodesize</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu">rfsgt</span><span class="op">(</span><span class="va">medv</span><span class="op">~</span><span class="va">.</span>, <span class="va">BostonHousing</span>, hcut<span class="op">=</span><span class="fl">3</span>, nodesize<span class="op">=</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">## the OOB error above is optimistic because the filter saw every case;</span></span>
+<span><span class="co">## cross-validation refits the filter inside each fold (see cv.rfsgt)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="cv.rfsgt.html">cv.rfsgt</a></span><span class="op">(</span><span class="va">medv</span><span class="op">~</span><span class="va">.</span>, <span class="va">BostonHousing</span>, hcut<span class="op">=</span><span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">## ------------------------------------------------------------</span></span>
 <span><span class="co">##</span></span>
@@ -674,10 +748,17 @@
 <span><span class="co">## load the data</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">Ozone</span>, package <span class="op">=</span> <span class="st">"mlbench"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu">rfsgt</span><span class="op">(</span><span class="va">V4</span><span class="op">~</span><span class="va">.</span>, <span class="fu"><a href="https://rdrr.io/r/stats/na.fail.html" class="external-link">na.omit</a></span><span class="op">(</span><span class="va">Ozone</span><span class="op">)</span>, hcut<span class="op">=</span><span class="fl">0</span>, nodesize<span class="op">=</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu">rfsgt</span><span class="op">(</span><span class="va">V4</span><span class="op">~</span><span class="va">.</span>, <span class="fu"><a href="https://rdrr.io/r/stats/na.fail.html" class="external-link">na.omit</a></span><span class="op">(</span><span class="va">Ozone</span><span class="op">)</span>, hcut<span class="op">=</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu">rfsgt</span><span class="op">(</span><span class="va">V4</span><span class="op">~</span><span class="va">.</span>, <span class="fu"><a href="https://rdrr.io/r/stats/na.fail.html" class="external-link">na.omit</a></span><span class="op">(</span><span class="va">Ozone</span><span class="op">)</span>, hcut<span class="op">=</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu">rfsgt</span><span class="op">(</span><span class="va">V4</span><span class="op">~</span><span class="va">.</span>, <span class="fu"><a href="https://rdrr.io/r/stats/na.fail.html" class="external-link">na.omit</a></span><span class="op">(</span><span class="va">Ozone</span><span class="op">)</span>, hcut<span class="op">=</span><span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">## remove missing values, convert factors to integers</span></span>
+<span><span class="va">o</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/data.matrix.html" class="external-link">data.matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/na.fail.html" class="external-link">na.omit</a></span><span class="op">(</span><span class="va">Ozone</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">## try different hcut values</span></span>
+<span><span class="co">## note the shallow trees; but performance is good</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu">rfsgt</span><span class="op">(</span><span class="va">V4</span><span class="op">~</span><span class="va">.</span>, <span class="va">o</span>, hcut<span class="op">=</span><span class="fl">0</span>, treesize<span class="op">=</span><span class="fl">6</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu">rfsgt</span><span class="op">(</span><span class="va">V4</span><span class="op">~</span><span class="va">.</span>, <span class="va">o</span>, hcut<span class="op">=</span><span class="fl">1</span>, treesize<span class="op">=</span><span class="fl">6</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu">rfsgt</span><span class="op">(</span><span class="va">V4</span><span class="op">~</span><span class="va">.</span>, <span class="va">o</span>, hcut<span class="op">=</span><span class="fl">2</span>, treesize<span class="op">=</span><span class="fl">6</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu">rfsgt</span><span class="op">(</span><span class="va">V4</span><span class="op">~</span><span class="va">.</span>, <span class="va">o</span>, hcut<span class="op">=</span><span class="fl">3</span>, treesize<span class="op">=</span><span class="fl">6</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu">rfsgt</span><span class="op">(</span><span class="va">V4</span><span class="op">~</span><span class="va">.</span>, <span class="va">o</span>, hcut<span class="op">=</span><span class="fl">4</span>, treesize<span class="op">=</span><span class="fl">6</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu">rfsgt</span><span class="op">(</span><span class="va">V4</span><span class="op">~</span><span class="va">.</span>, <span class="va">o</span>, hcut<span class="op">=</span><span class="fl">5</span>, treesize<span class="op">=</span><span class="fl">6</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="op">}</span></span>
 <span></span>
@@ -720,49 +801,45 @@
 <span><span class="op">}</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">## nice little wrapper for plotting results</span></span>
-<span><span class="kw">if</span> <span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st">"interp"</span>, logical.return <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="co">## nice little wrapper for plotting results</span></span>
-<span>  <span class="va">plot.image</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span>, <span class="va">z</span>, <span class="va">linear</span><span class="op">=</span><span class="cn">TRUE</span>, <span class="va">nlevels</span><span class="op">=</span><span class="fl">40</span>, <span class="va">points</span><span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="va">xo</span> <span class="op">&lt;-</span> <span class="va">x</span>; <span class="va">yo</span> <span class="op">&lt;-</span> <span class="va">y</span></span>
-<span>    <span class="va">so</span> <span class="op">&lt;-</span> <span class="fu">interp</span><span class="op">(</span>x<span class="op">=</span><span class="va">x</span>, y<span class="op">=</span><span class="va">y</span>, z<span class="op">=</span><span class="va">z</span>, linear<span class="op">=</span><span class="va">linear</span>, nx<span class="op">=</span><span class="va">nlevels</span>, ny<span class="op">=</span><span class="va">nlevels</span><span class="op">)</span></span>
-<span>    <span class="va">x</span> <span class="op">&lt;-</span> <span class="va">so</span><span class="op">$</span><span class="va">x</span>; <span class="va">y</span> <span class="op">&lt;-</span> <span class="va">so</span><span class="op">$</span><span class="va">y</span>; <span class="va">z</span> <span class="op">&lt;-</span> <span class="va">so</span><span class="op">$</span><span class="va">z</span></span>
-<span>    <span class="va">xlim</span> <span class="op">&lt;-</span> <span class="va">ylim</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span><span class="op">)</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span>, finite <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span>    <span class="va">z</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/is.finite.html" class="external-link">is.infinite</a></span><span class="op">(</span><span class="va">z</span><span class="op">)</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="cn">NA</span></span>
-<span>    <span class="va">zlim</span> <span class="op">&lt;-</span> <span class="va">q</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/quantile.html" class="external-link">quantile</a></span><span class="op">(</span><span class="va">z</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">.01</span>, <span class="fl">.99</span><span class="op">)</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> </span>
-<span>    <span class="va">z</span><span class="op">[</span><span class="va">z</span><span class="op">&lt;=</span><span class="va">q</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">q</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span>
-<span>    <span class="va">z</span><span class="op">[</span><span class="va">z</span><span class="op">&gt;=</span><span class="va">q</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">q</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span></span>
-<span>    <span class="va">levels</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/pretty.html" class="external-link">pretty</a></span><span class="op">(</span><span class="va">zlim</span>, <span class="va">nlevels</span><span class="op">)</span></span>
-<span>    <span class="va">col</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/grDevices/palettes.html" class="external-link">hcl.colors</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">levels</span><span class="op">)</span><span class="op">-</span><span class="fl">1</span>, <span class="st">"YlOrRd"</span>, rev <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/graphics/frame.html" class="external-link">plot.new</a></span><span class="op">(</span><span class="op">)</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/graphics/plot.window.html" class="external-link">plot.window</a></span><span class="op">(</span><span class="va">xlim</span>, <span class="va">ylim</span>, <span class="st">""</span>, xaxs <span class="op">=</span> <span class="st">"i"</span>, yaxs <span class="op">=</span> <span class="st">"i"</span>, asp <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/graphics/filled.contour.html" class="external-link">.filled.contour</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span>, <span class="va">z</span>, <span class="va">levels</span>, <span class="va">col</span><span class="op">)</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/graphics/axis.html" class="external-link">axis</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>;<span class="fu"><a href="https://rdrr.io/r/graphics/axis.html" class="external-link">axis</a></span><span class="op">(</span><span class="fl">2</span><span class="op">)</span></span>
-<span>    <span class="kw">if</span> <span class="op">(</span><span class="va">points</span><span class="op">)</span> </span>
-<span>      <span class="fu"><a href="https://rdrr.io/r/graphics/points.html" class="external-link">points</a></span><span class="op">(</span><span class="va">xo</span>,<span class="va">yo</span> ,pch<span class="op">=</span><span class="fl">16</span>, cex<span class="op">=</span><span class="fl">.25</span><span class="op">)</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/graphics/box.html" class="external-link">box</a></span><span class="op">(</span><span class="op">)</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/base/invisible.html" class="external-link">invisible</a></span><span class="op">(</span><span class="op">)</span></span>
-<span>  <span class="op">}</span></span>
+<span><span class="va">plot.image</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span>, <span class="va">z</span>, <span class="va">nlevels</span><span class="op">=</span><span class="fl">40</span>, <span class="va">points</span><span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">xo</span> <span class="op">&lt;-</span> <span class="va">x</span>; <span class="va">yo</span> <span class="op">&lt;-</span> <span class="va">y</span></span>
+<span>  <span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>; <span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span></span>
+<span>  <span class="co">## X2 varies fastest within each X1 block of x.tst.</span></span>
+<span>  <span class="va">z</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="va">z</span>, nrow<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>, ncol<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span>, byrow<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
+<span>  <span class="va">xlim</span> <span class="op">&lt;-</span> <span class="va">ylim</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span><span class="op">)</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span>, finite <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span>  <span class="va">z</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/is.finite.html" class="external-link">is.infinite</a></span><span class="op">(</span><span class="va">z</span><span class="op">)</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="cn">NA</span></span>
+<span>  <span class="va">zlim</span> <span class="op">&lt;-</span> <span class="va">q</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/quantile.html" class="external-link">quantile</a></span><span class="op">(</span><span class="va">z</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">.01</span>, <span class="fl">.99</span><span class="op">)</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> </span>
+<span>  <span class="va">z</span><span class="op">[</span><span class="va">z</span><span class="op">&lt;=</span><span class="va">q</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">q</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span>
+<span>  <span class="va">z</span><span class="op">[</span><span class="va">z</span><span class="op">&gt;=</span><span class="va">q</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">q</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span></span>
+<span>  <span class="va">levels</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/pretty.html" class="external-link">pretty</a></span><span class="op">(</span><span class="va">zlim</span>, <span class="va">nlevels</span><span class="op">)</span></span>
+<span>  <span class="va">col</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/grDevices/palettes.html" class="external-link">hcl.colors</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">levels</span><span class="op">)</span><span class="op">-</span><span class="fl">1</span>, <span class="st">"YlOrRd"</span>, rev <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/graphics/frame.html" class="external-link">plot.new</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/graphics/plot.window.html" class="external-link">plot.window</a></span><span class="op">(</span><span class="va">xlim</span>, <span class="va">ylim</span>, <span class="st">""</span>, xaxs <span class="op">=</span> <span class="st">"i"</span>, yaxs <span class="op">=</span> <span class="st">"i"</span>, asp <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/graphics/filled.contour.html" class="external-link">.filled.contour</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span>, <span class="va">z</span>, <span class="va">levels</span>, <span class="va">col</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/graphics/axis.html" class="external-link">axis</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>;<span class="fu"><a href="https://rdrr.io/r/graphics/axis.html" class="external-link">axis</a></span><span class="op">(</span><span class="fl">2</span><span class="op">)</span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="va">points</span><span class="op">)</span> </span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/graphics/points.html" class="external-link">points</a></span><span class="op">(</span><span class="va">xo</span>,<span class="va">yo</span> ,pch<span class="op">=</span><span class="fl">16</span>, cex<span class="op">=</span><span class="fl">.25</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/graphics/box.html" class="external-link">box</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/invisible.html" class="external-link">invisible</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
 <span></span>
-<span>  <span class="va">oldpar</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>,<span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/graphics/image.html" class="external-link">image</a></span><span class="op">(</span><span class="va">x1</span>, <span class="va">x2</span>, <span class="va">truth</span>, xlab<span class="op">=</span><span class="st">""</span>, ylab<span class="op">=</span><span class="st">""</span><span class="op">)</span></span>
+<span><span class="va">oldpar</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>,<span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/image.html" class="external-link">image</a></span><span class="op">(</span><span class="va">x1</span>, <span class="va">x2</span>, <span class="va">truth</span>, xlab<span class="op">=</span><span class="st">""</span>, ylab<span class="op">=</span><span class="st">""</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/contour.html" class="external-link">contour</a></span><span class="op">(</span><span class="va">x1</span>, <span class="va">x2</span>, <span class="va">truth</span>, nlevels <span class="op">=</span> <span class="fl">15</span>, add <span class="op">=</span> <span class="cn">TRUE</span>, drawlabels <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/mtext.html" class="external-link">mtext</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span>,<span class="fl">1</span>,line<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/mtext.html" class="external-link">mtext</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="va">x</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span>,<span class="fl">2</span>,line<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/mtext.html" class="external-link">mtext</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="st">"truth"</span><span class="op">)</span>,<span class="fl">3</span>,line<span class="op">=</span><span class="fl">1</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">pO</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">4</span>, <span class="kw">function</span><span class="op">(</span><span class="va">j</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu">plot.image</span><span class="op">(</span><span class="va">nl2d.tst</span><span class="op">[</span>,<span class="st">"X1"</span><span class="op">]</span>,<span class="va">nl2d.tst</span><span class="op">[</span>,<span class="st">"X2"</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">rO</span><span class="op">[[</span><span class="va">j</span><span class="op">+</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, <span class="va">nl2d.tst</span><span class="op">)</span><span class="op">$</span><span class="va">predicted</span><span class="op">)</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/graphics/contour.html" class="external-link">contour</a></span><span class="op">(</span><span class="va">x1</span>, <span class="va">x2</span>, <span class="va">truth</span>, nlevels <span class="op">=</span> <span class="fl">15</span>, add <span class="op">=</span> <span class="cn">TRUE</span>, drawlabels <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/graphics/mtext.html" class="external-link">mtext</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span>,<span class="fl">1</span>,line<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/graphics/mtext.html" class="external-link">mtext</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="va">x</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span>,<span class="fl">2</span>,line<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/graphics/mtext.html" class="external-link">mtext</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="st">"truth"</span><span class="op">)</span>,<span class="fl">3</span>,line<span class="op">=</span><span class="fl">1</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/graphics/mtext.html" class="external-link">mtext</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"hcut="</span>,<span class="va">j</span><span class="op">)</span>,<span class="fl">3</span>,line<span class="op">=</span><span class="fl">1</span><span class="op">)</span></span>
+<span>  <span class="cn">NULL</span></span>
+<span><span class="op">}</span><span class="op">)</span></span>
 <span></span>
-<span>  <span class="va">pO</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">4</span>, <span class="kw">function</span><span class="op">(</span><span class="va">j</span><span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="fu">plot.image</span><span class="op">(</span><span class="va">nl2d.tst</span><span class="op">[</span>,<span class="st">"X1"</span><span class="op">]</span>,<span class="va">nl2d.tst</span><span class="op">[</span>,<span class="st">"X2"</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">rO</span><span class="op">[[</span><span class="va">j</span><span class="op">+</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, <span class="va">nl2d.tst</span><span class="op">)</span><span class="op">$</span><span class="va">predicted</span><span class="op">)</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/graphics/contour.html" class="external-link">contour</a></span><span class="op">(</span><span class="va">x1</span>, <span class="va">x2</span>, <span class="va">truth</span>, nlevels <span class="op">=</span> <span class="fl">15</span>, add <span class="op">=</span> <span class="cn">TRUE</span>, drawlabels <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/graphics/mtext.html" class="external-link">mtext</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span>,<span class="fl">1</span>,line<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/graphics/mtext.html" class="external-link">mtext</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="va">x</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span>,<span class="fl">2</span>,line<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/graphics/mtext.html" class="external-link">mtext</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"hcut="</span>,<span class="va">j</span><span class="op">)</span>,<span class="fl">3</span>,line<span class="op">=</span><span class="fl">1</span><span class="op">)</span></span>
-<span>    <span class="cn">NULL</span></span>
-<span>  <span class="op">}</span><span class="op">)</span></span>
-<span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="va">oldpar</span><span class="op">)</span></span>
-<span></span>
-<span> </span>
-<span><span class="op">}</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="va">oldpar</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">## ------------------------------------------------------------</span></span>
 <span><span class="co">##</span></span>
@@ -777,8 +854,8 @@
 <span><span class="va">dta</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="fu">mlbench</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/mlbench/man/mlbench.friedman1.html" class="external-link">mlbench.friedman1</a></span><span class="op">(</span><span class="va">n</span>, sd<span class="op">=</span><span class="fl">0</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">## rf versus rfsgt</span></span>
-<span><span class="va">o1</span> <span class="op">&lt;-</span> <span class="fu">rfsgt</span><span class="op">(</span><span class="va">y</span><span class="op">~</span><span class="va">.</span>, <span class="va">dta</span>, hcut<span class="op">=</span><span class="fl">0</span>, block.size<span class="op">=</span><span class="fl">1</span><span class="op">)</span></span>
-<span><span class="va">o2</span> <span class="op">&lt;-</span> <span class="fu">rfsgt</span><span class="op">(</span><span class="va">y</span><span class="op">~</span><span class="va">.</span>, <span class="va">dta</span>, hcut<span class="op">=</span><span class="fl">3</span>, block.size<span class="op">=</span><span class="fl">1</span><span class="op">)</span></span>
+<span><span class="va">o1</span> <span class="op">&lt;-</span> <span class="fu">rfsgt</span><span class="op">(</span><span class="va">y</span><span class="op">~</span><span class="va">.</span>, <span class="va">dta</span>, hcut<span class="op">=</span><span class="fl">0</span><span class="op">)</span></span>
+<span><span class="va">o2</span> <span class="op">&lt;-</span> <span class="fu">rfsgt</span><span class="op">(</span><span class="va">y</span><span class="op">~</span><span class="va">.</span>, <span class="va">dta</span>, hcut<span class="op">=</span><span class="fl">3</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">## compute running average of OOB empirical risk</span></span>
 <span><span class="va">runavg</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">lag</span> <span class="op">=</span> <span class="fl">8</span><span class="op">)</span> <span class="op">{</span></span>
@@ -961,24 +1038,24 @@
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu">rfsgt</span><span class="op">(</span><span class="va">y</span><span class="op">~</span><span class="va">.</span>,<span class="va">dta</span>, filter<span class="op">=</span><span class="fu"><a href="utilities_internal.html">use.tune.hcut</a></span><span class="op">(</span><span class="va">f</span>, hcut<span class="op">=</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu">rfsgt</span><span class="op">(</span><span class="va">y</span><span class="op">~</span><span class="va">.</span>,<span class="va">dta</span>, filter<span class="op">=</span><span class="fu"><a href="utilities_internal.html">use.tune.hcut</a></span><span class="op">(</span><span class="va">f</span>, hcut<span class="op">=</span><span class="fl">3</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span></span>
 <span><span class="co">## ------------------------------------------------------------</span></span>
 <span><span class="co">##</span></span>
 <span><span class="co">## get local beta values and partial contributions</span></span>
 <span><span class="co">##</span></span>
 <span><span class="co">## SGTs are not only predictive; the same fit can be queried</span></span>
 <span><span class="co">## for local parametric summaries.  We use friedman 1 for</span></span>
-<span><span class="co">## illustration.</span></span>
+<span><span class="co">## illustration.  See get.beta for details</span></span>
 <span><span class="co">##</span></span>
 <span><span class="co">## ------------------------------------------------------------</span></span>
 <span></span>
 <span><span class="va">n</span> <span class="op">&lt;-</span> <span class="fl">100</span></span>
 <span><span class="va">dta</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="fu">mlbench</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/mlbench/man/mlbench.friedman1.html" class="external-link">mlbench.friedman1</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">o</span> <span class="op">&lt;-</span> <span class="fu">rfsgt</span><span class="op">(</span><span class="va">y</span><span class="op">~</span><span class="va">.</span>, <span class="va">dta</span>, hcut<span class="op">=</span><span class="fl">3</span>, pure.lasso<span class="op">=</span><span class="cn">TRUE</span>, treesize<span class="op">=</span><span class="fl">10</span><span class="op">)</span></span>
-<span><span class="va">bO</span> <span class="op">&lt;-</span> <span class="fu"><a href="utilities_internal.html">get.beta</a></span><span class="op">(</span><span class="va">o</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">bO</span><span class="op">$</span><span class="va">beta</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">bO</span><span class="op">$</span><span class="va">partial</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
+<span><span class="va">b</span> <span class="op">&lt;-</span> <span class="fu"><a href="get.beta.html">get.beta</a></span><span class="op">(</span><span class="va">o</span><span class="op">)</span></span>
+<span><span class="co">## print beta, partial values - remove intercept</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">b</span><span class="op">$</span><span class="va">beta</span><span class="op">[</span>, <span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">b</span><span class="op">$</span><span class="va">partial</span><span class="op">[</span>, <span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="get.beta.html">partial.beta</a></span><span class="op">(</span><span class="va">b</span>, <span class="va">o</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span><span class="co"># }</span></span></code></pre></div>
     </div>

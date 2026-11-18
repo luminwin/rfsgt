@@ -23,7 +23,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">Random Forest Super Greedy Trees</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.0.0</span>
       </span>
     </div>
 
@@ -71,6 +71,43 @@
     </div>
     
         <div class="section level2">
+<h2 class="page-header" data-toc-text="2.0.0" id="randomforestsgt-200">randomForestSGT 2.0.0<a class="anchor" aria-label="anchor" href="#randomforestsgt-200"></a></h2>
+<div class="section level3">
+<h3 id="new-features-2-0-0">New features<a class="anchor" aria-label="anchor" href="#new-features-2-0-0"></a></h3>
+<ul>
+<li><p>Added node centering (<code>node.center = TRUE</code>) before forming polynomial and interaction terms, with support in fitting, prediction, filtering, and tuning.</p></li>
+<li><p>Added restricted lasso predictions (<code>node.restrict = TRUE</code>), which clamp predictors and scores to each node's inbag predictor and response ranges. Applies to OOB and new-data predictions; <code><a href="../reference/predict.rfsgt.html">predict()</a></code> can override the saved setting. Older forests without this setting remain unrestricted by default.</p></li>
+<li><p>Added <code><a href="../reference/cv.rfsgt.html">cv.rfsgt()</a></code> and <code>make.folds()</code> for cross-validation with reusable folds and per-fold seeds. Filtering and optional <code>hcut</code> tuning are repeated within each training fold, with held-out predictions and error summaries returned.</p></li>
+<li><p>Added <code><a href="../reference/plot.rfsgt.html">plot.rfsgt()</a></code> for per-tree OOB risk curves and comparisons of forest OOB error across tree sizes.</p></li>
+<li><p>Extended <code><a href="../reference/get.beta.html">get.beta()</a></code> to report centered-model coefficients in the original coordinates, including induced lower-order terms. Restricted predictions are reconstructed from term contributions plus <code>response.adjustment</code>.</p></li>
+<li><p>Added relaxed coefficient estimation with <code><a href="../reference/get.beta.html">get.beta(..., relaxed = TRUE)</a></code> using OOB least squares, global or local active terms, standard errors, and leave-one-out predictions for training observations.</p></li>
+<li><p>Added <code>partial.beta()</code> for variable-effect plots and <code>importance.beta()</code> for marginal and conditional importance summaries based on those effects.</p></li>
+</ul>
+</div>
+<div class="section level3">
+<h3 id="changes-to-defaults-and-behavior-2-0-0">Changes to defaults and behavior<a class="anchor" aria-label="anchor" href="#changes-to-defaults-and-behavior-2-0-0"></a></h3>
+<ul>
+<li><p>Changed the default <code>hcut</code> from 1 to 2, enabling quadratic terms and variable filtering by default.</p></li>
+<li><p>Centered fits now default to <code>bsf = "inbag"</code>; uncentered fits with <code>hcut &gt; 0</code> retain <code>bsf = "oob"</code>. <code><a href="../reference/tune.hcut.html">tune.hcut()</a></code> now defaults to <code>bsf = "inbag"</code>. Fitting with a tuning result inherits its centering and BSF settings unless explicitly overridden.</p></li>
+<li><p>Reduced the default tree-size limit for <code>hcut &gt;= 2</code> from <code>min(100, n/5)</code> to <code>min(25, n/5)</code>, and changed the grow <code>block.size</code> default from 10 to 1.</p></li>
+<li><p>Changed the <code><a href="../reference/get.beta.html">get.beta()</a></code> default from <code>bag = "inbag"</code> to <code>bag = "oob"</code>.</p></li>
+<li><p>Revised random-seed initialization; results for a fixed seed can differ from version 1.0.0.</p></li>
+<li><p>Printed fits now report node centering and restriction settings and flag potentially optimistic OOB error when variable filtering was used.</p></li>
+</ul>
+</div>
+<div class="section level3">
+<h3 id="fixes-and-robustness-2-0-0">Fixes and robustness<a class="anchor" aria-label="anchor" href="#fixes-and-robustness-2-0-0"></a></h3>
+<ul>
+<li><p>Preserved source predictors and term maps needed to reconstruct retained polynomial terms after filtering, including during tuning and prediction.</p></li>
+<li><p>Corrected saved-forest restoration of terminal membership and inbag counts, including repeated bootstrap draws, and preserved CART fallback and split types when saving trees.</p></li>
+<li><p>Corrected forest offsets for predictions using selected trees (<code>get.tree</code>).</p></li>
+<li><p>Improved <code><a href="../reference/get.beta.html">get.beta()</a></code> handling of restored objects and observations without contributing trees, preserving missing predictions instead of returning zero.</p></li>
+<li><p>Strengthened validation of saved forest dimensions and membership output, widened native array-length and offset calculations, and released native allocations used by custom bootstrap samples.</p></li>
+<li><p>Improved the SGT-importance fallback when varPro screening fails or returns no result.</p></li>
+</ul>
+</div>
+</div>
+<div class="section level2">
 <h2 class="page-header" data-toc-text="1.0.0" id="randomforestsgt-100">randomForestSGT 1.0.0<a class="anchor" aria-label="anchor" href="#randomforestsgt-100"></a></h2>
 <div class="section level3">
 <h3 id="release-the-birthday-of-varpro-is-0-0">RELEASE 1.0.0 on CRAN on 05/11/2026<a class="anchor" aria-label="anchor" href="#release-the-birthday-of-varpro-is-0-0"></a></h3>
